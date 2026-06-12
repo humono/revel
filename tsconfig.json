@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    /* Target ECMAScript version and module system */
+    "target": "ES2022",
+    "module": "CommonJS",
+    
+    /* Modern module resolution strategy for TypeScript 6+ and Playwright */
+    "moduleResolution": "bundler",
+    
+    /* Type Checking Rules */
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    
+    /* Load Node.js environment type definitions */
+    "types": ["node"],
+    
+    /* Path Mapping configuration (Alias) */
+    "paths": {
+      "@pages/*": ["./pages/*"],
+      "@tests/*": ["./tests/*"],
+      "@components/*": ["./pages/components/*"]
+    }
+  },
+  /* Specific files and directories to be compiled by TypeScript */
+  "include": ["pages/**/*.ts", "tests/**/*.ts", "playwright.config.ts"]
+}
