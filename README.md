@@ -28,7 +28,7 @@ Ensure you have the following installed on your system:
 
 1. **Clone the repository:**
    ```bash
-   git clone <YOUR_REPOSITORY_URL>
+   git clone https://github.com/humono/revel.git
    cd <PROJECT_FOLDER_NAME>
    ```
 
