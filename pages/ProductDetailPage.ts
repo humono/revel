@@ -19,7 +19,7 @@ export class ProductDetailPage {
    * @private
    */
   private get title() {
-    return this.page.locator("h1"); // ONLY h1 on the page (most stable approach here)
+    return this.page.locator("h1"); // ONLY h1 on the page (most stable approach)
   }
 
   /**
@@ -43,7 +43,6 @@ export class ProductDetailPage {
    */
   async verifyTitle(expectedName: string): Promise<void> {
     const actual = await this.title.innerText();
-
     await expect(this.title).toBeVisible();
 
     expect(TextUtiltiies.normalize(actual)).toContain(TextUtiltiies.normalize(expectedName));
