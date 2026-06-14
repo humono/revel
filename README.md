@@ -66,12 +66,12 @@ This framework maps directly to the user journeys of the [REVEL](https://drivere
 ```text
 ├── pages/                   # UI Locators and Actions (POM)
 │   ├── components/
-│   │   ├── Navbar.ts        # Global navigation (Cars, Offers, Sustainability)
+│   │   ├── Navbar.ts        # Global navigation
 │   │   └── Footer.ts        # Lower links, privacy policy, and social media
-│   ├── HomePage.ts          # Main Landing (Hero banner, Ambassador section, FAQs)
-│   ├── CatalogPage.ts       # Vehicle Catalog (Brand filters, price sorting)
-│   ├── ProductDetailPage.ts # Configurator (12/36-month subscription plans & mileage)
-│   └── CheckoutPage.ts      # Digital checkout funnel (Identity validation, payment)
+│   ├── HomePage.ts          # Main Landing
+│   ├── CatalogPage.ts       # Vehicle Catalog
+│   ├── ProductDetailPage.ts # Car detail page
+│   └── CheckoutPage.ts      # Digital checkout funnel
 │
 ├── tests/                   # Test Specification Files
 │   ├── home.spec.ts         # Verifies hero sections, navigation links, and FAQs
@@ -82,4 +82,80 @@ This framework maps directly to the user journeys of the [REVEL](https://drivere
 ├── playwright.config.ts     # Global configurations (BaseURL, parallelization, browsers)
 ├── package.json             # NPM dependencies and scripts
 └── tsconfig.json            # TypeScript engine rules
+```
+
+## 🧹 Test Data Cleanup Strategy (Critical for Reliable E2E Tests)
+
+In end-to-end automation, test isolation is a critical requirement to avoid flaky results and data pollution across executions.
+
+This framework enforces a “clean state first, clean state after” approach whenever tests modify persistent or semi-persistent data (e.g. leads, forms, backend entities, or UI state tied to server-side data).
+
+### 🎯 Core Principle
+
+Each test must be independent and leave no trace in the system.
+
+### 🔄 When Cleanup is Required
+
+Cleanup is mandatory when tests involve:
+
+- Lead / form submissions (e.g. checkout or contact forms)
+- Backend-created entities (users, requests, bookings, etc.)
+- Filters or UI states that persist across sessions
+- Any API-driven mutation with side effects
+- Analytics or tracking-sensitive flows (ROI-critical paths)
+
+### 🧪 Recommended Patterns for Clean Tests
+
+1. Pre-Test Cleanup (Preferred when possible)
+
+```ts
+// Ensure the environment starts in a known state:
+test.beforeEach(async () => {
+  await api.deleteTestLeads(); // example backend cleanup
+});
+```
+
+2. Post-Test Cleanup (Required for critical flows)
+
+```ts
+// Used when data is created during the test:
+test.afterEach(async () => {
+  await api.deleteCreatedLead(testLeadId);
+});
+```
+
+3. Scoped Cleanup Inside Page Objects
+
+```ts
+// Encapsulate cleanup logic close to the feature:
+await checkoutPage.submitLeadForm();
+```
+
+> Cleanup responsibility can be handled via API or teardown hook
+
+### 🧠 Best Practice: Prefer API-Level Cleanup
+
+Whenever possible:
+
+- Avoid cleaning through UI (slow & fragile)
+- Use API calls or database hooks
+- Keep UI only for validation, not teardown
+
+### ⚙️ State Isolation Strategy
+
+To prevent cross-test contamination:
+
+- Never rely on previous test state
+- Always reset filters, sessions, or UI state when needed
+- Use fresh browser context per test (Playwright default behavior)
+- Avoid shared mutable global state in Page Objects
+
+### 🚨 Anti-Patterns to Avoid
+
+```
+❌ Leaving created leads without cleanup
+❌ Reusing the same user/session data across tests
+❌ Relying on execution order
+❌ Assuming UI reset = backend reset
+❌ Mixing test data across scenarios
 ```
